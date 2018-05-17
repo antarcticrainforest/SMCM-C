@@ -52,9 +52,8 @@ You can access *new_variable* via:
 ```python
 CG.new_variable
 ```
+### Running an Example 
+A short example of how to run the cloud model is available in the [test_run](https://github.com/antarcticrainforest/SMCM-C/blob/master/test_run.ipynb) ipython-notebook
 
-### Running experiments
+### Running Experiments
 The *run_cloudmodel* module contains a some methods to run various experiments, like a sensetivity study. To make use of all features of the modle it is highly recommended to have [mpi4py](http://www.mpi4py.scipy.org/docs) module installed.
-
-### Example 
-A short example of how to run the cloud model is available in the *test_run* ipython-notebook
