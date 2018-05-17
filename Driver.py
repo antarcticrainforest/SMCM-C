@@ -586,7 +586,6 @@ if __name__ == "__main__":
             var = 2- (2 * ( 1 - var))
             var2 /= 12.5
             var2[var2>2]=2
-            from scipy.stats import pearsonr
             plt.scatter(var,var2)
             plt.xlabel('Moisture')
             plt.ylabel('Instability')

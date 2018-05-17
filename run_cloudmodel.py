@@ -257,7 +257,7 @@ def run_once(**kwargs):
 
 
 
-    Cfg,dates  = __getdates(**kwargs)
+    Cfg, dates  = __getdates(**kwargs)
     #Split the days for the MPI
     samples = np.array_split(dates,size)
     if scatter :
@@ -280,12 +280,12 @@ def run_once(**kwargs):
             if box:
                 Cfg.obs = box
             if type(Cfg.obs) != type(None):
-                Str=os.path.join(os.environ['HOME'],'PhD','Data','SMCM',
+                Str=os.path.join(Cfg.datadir,
                         'Modelrain_%s_%s-%s.pkl'%(Cfg.obs.upper(),
                             Cfg.start.replace('-','.'),end.replace('-','.')))
             #"""
             else:
-                Str=os.path.join(os.environ['HOME'],'PhD','Data','SMCM',
+                Str=os.path.join(Cfg.datadir,
                         'Modelrain_None_%s-%s.pkl'%(
                             Cfg.start.replace('-','.'),end.replace('-','.')))
             if os.path.isfile(Str):
@@ -338,8 +338,8 @@ def run_once(**kwargs):
         for box in kwargs['boxes']:
             first = first.strftime('%Y.%m.%d_%H:%M')
             last = last.strftime('%Y.%m.%d_%H:%M')
-            Write = os.path.join(os.environ['HOME'],'PhD','Data','SMCM',
-                    'Modelrain_%s_%s-%s.pkl'%(box.upper(),first,last))
+            Write = os.path.join(Cfg.datadir,
+                                 'Modelrain_%s_%s-%s.pkl'%(box.upper(),first,last))
             if os.path.isfile(Write):
                 os.remove(Write)
             data = None
@@ -348,8 +348,8 @@ def run_once(**kwargs):
                     start = (X[0]).strftime('%Y.%m.%d_%H:%M')
                     end = (X[-1]).strftime('%Y.%m.%d_%H:%M')
 
-                    Read = os.path.join(os.environ['HOME'],'PhD','Data','SMCM',
-                            'Modelrain_%s_%s-%s.pkl'%(box.upper(),start,end))
+                    Read = os.path.join( Cfg.datadir,
+                                        'Modelrain_%s_%s-%s.pkl'%(box.upper(),start,end))
 
                     if not os.path.isfile(Read):
                         sys.stderr.write('\n File %s does not exsist, skipping\n'%Read)
@@ -428,9 +428,7 @@ def diurnal_cylce(**kwargs):
         delta = X[-1] - X[0]
         hours = max(delta.days*24 + delta.seconds/60.**2,24)
         Cfg.tend=hours
-        datadir=os.path.join(os.environ['HOME'],'PhD','Data','SMCM')
-        if not os.path.isdir(datadir):
-            datadir=os.path.join(os.environ['HOME'],'Data','SMCM')
+        datadir=os.path.join(Cfg.datadir)
 
         for box in boxes:
             if box:
@@ -649,7 +647,7 @@ def coastal_sensitivity(**kwargs):
     fname = 'coastal_sensitivity_%s.nc'%(\
             dict(true='sobol',false='nosobol')[str(kwargs['sobol']).lower()])
     
-    fname=os.path.join(os.environ['HOME'],'PhD','Data','SMCM',fname)
+    fname=os.path.join(Cfg.datadir, fname)
     attrs=dict(
             lat=dict(long_name='latitude',units='degrees_east',axis='X'),
             lon=dict(long_name='longitude',units='degrees_nort',axis='Y'),
@@ -1020,7 +1018,7 @@ def CD_sensitivity(**kwargs):
         out = pd.DataFrame(frame,columns=problem['names']+out_names)
         fname = 'CD_sensitivity_%0.2f_%0.2f_%02f.pkl'%(Cfg.dtmax,Cfg.phase,Cfg.add_c)
         
-        fname=os.path.join(os.environ['HOME'],'PhD','Data','SMCM',fname)
+        fname=os.path.join(Cfg.datadir, fname)
         out.to_pickle(fname)
         
 

@@ -8,10 +8,7 @@ Created on August 13, 2013
 @description: Collect information from a given config file and return the
               content as a dict-object
 '''
-import os,sys,string,glob
-from datetime import timedelta,datetime
-from netCDF4 import Dataset as nc, date2num,num2date
-import numpy as np
+import os, sys, string, glob
 class Config(dict):
     """
     Config-class : Config(filename,**kwargs)
