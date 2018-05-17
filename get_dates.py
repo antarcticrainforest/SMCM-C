@@ -1,12 +1,9 @@
-#!/usr/bin/env python2.7
-
-
 import pandas as pd
 import sys,os,datetime
 import numpy as np
 from Driver import Reader
 from netCDF4 import num2date
-from Master.configdir import Config
+from configdir import Config
 from run_cloudmodel import GetNames
 
 

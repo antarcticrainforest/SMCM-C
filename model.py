@@ -1,7 +1,7 @@
 #!/usr/bin/env python2.7
 
 import numpy as np
-from Master.configdir import Config
+from configdir import Config
 from Read import Data
 from Driver import Reader
 import datetime
@@ -67,7 +67,7 @@ class SMCM(object):
             rho = 1
         return rho
     @staticmethod
-    def _makeMatirix(array):
+    def _makeMatrix(array):
         """
             This function takes an array and enlarges it by 2 fields
         """
@@ -110,7 +110,7 @@ class SMCM(object):
             conf=configfile
         #Convert the startdate to a datetime object
         conf.start = datetime.datetime.strptime(conf.start,'%Y-%m-%d_%H:%M')
-        for i,j in conf.iteritems(): 
+        for i,j in conf.items():
             setattr(self,i,j)
        
         self.J0 = _kwargs(kwargs,'J0',np.array([[1.,0.,0.],[0.,.5,.2],\
@@ -128,7 +128,7 @@ class SMCM(object):
         self.RD=Data(conf)
         self.m = self.n/self.q
         self.lsm,self.dist = self.RD.lsm(self.m,form=self.form)
-        self.mask = SMCM._makeMatirix(self.lsm)
+        self.mask = SMCM._makeMatrix(self.lsm)
         #check if we prescirbing with an real or an artificial thermal heating
         #contrast
         #If the model is driven with observastions we need to read the data
@@ -301,13 +301,42 @@ class SMCM(object):
         setattr(self,'C',C)
 
 if __name__ == "__main__":
-    D=0.5
-    C=0.1
-    S=SMCM(D=D,C=C)
-    print S.norm_rho.round(1)
-    S._update('C',0.99,0,1)
-    print ' #############'
-    #S.C = 0.0291672729598
-    print S.norm_rho.round(1)
-    
+    import sys
+    from coarsgraining import Coarsgraining
+    D = 0.2 # Test-run, the dryness parameter
+    C = 0.6 # Test-run, the instability parameter
+    CG = Coarsgraining('constants.config', C, D) #The model object
+    #Time-vector
+    tt = int(0)
+    t = []
+    #Construct the time vector
+    while tt <= int(CG.tend * 60):
+        t.append(float(tt)/60.)
+        tt += int(CG.dt * 60)
+    t = np.array(t)
+    caf = np.zeros([3,len(t)])
+
+
+    for ii,tt in enumerate(t):
+        sys.stdout.flush()
+        sys.stdout.write('\rRunning model %03i/%03i '%(tt,len(t)))
+        sys.stdout.flush()
+        CG.birthdeath(CG.dt, tt) #Call the birth-death process
+        CG._update(tt, m=None, n=None) #And update all parameters
+        caf[0,ii] = np.mean(CG.Ndcg)/CG.q**2 #CAF of congestus clouds
+        caf[1,ii] = np.mean(CG.Nccg)/CG.q**2 #CAF of deep clouds
+        caf[2,ii] = np.mean(CG.Nscg)/CG.q**2 #CAF of stratiform clouds
+
+    #Plot the results
+    import matplotlib
+    from matplotlib import pyplot as plt
+    font = {'family' : 'normal', 'weight' : 'normal',  'size'   : 22}
+    matplotlib.rc('font', **font)
+    plt.plot(t, caf[0], label='Congestus', lw=2)
+    plt.plot(t, caf[1], label='Deep', lw=2)
+    plt.plot(t, caf[2], label='Stratiform',lw=2)
+    plt.legend(loc=0)
+    plt.xlabel('Time [hours]')
+    plt.ylabel('Cloud Area Fraction []')
+    plt.show()
 

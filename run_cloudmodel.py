@@ -7,7 +7,7 @@ import sys,os,datetime
 from coarsgraining import coarsgraining
 from model import SMCM
 import pandas as pd
-from Master.configdir import Config
+from configdir import Config
 from Driver import check
 import geocoder
 import numpy as np
@@ -71,9 +71,9 @@ def integrate(cl,**kwargs):
         plt.yticks([])
         plt.ion()
         plt.show()
-    pcolor= None
+    pcolor = None
     #The time list
-    tday,thc = [],[]
+    tday, thc = [], []
     #A little helper for getting the right appendix of numbers
     App = {1:'st',2:'nd',3:'rd'}
     y = cl.start
@@ -177,14 +177,16 @@ def init(**kwargs):
     Method that creates and returns the coarsgraining object
     """
     #Scaling values cape and moisture
-    M0 = check(kwargs,'M0',20)
-    C0 = check(kwargs,'C0',1500)
-    conf = check(kwargs,'conf','constants.config')
-    multicol = check(kwargs,'multicol',True)
-    J0 = check(kwargs,'J0',np.array([[0.75,0.25,0.,],[0.4,0.85,0.,],[0,0.2,1,]]))
+    M0 = check(kwargs,'M0', 20)
+    C0 = check(kwargs,'C0', 1500)
+    conf = check(kwargs,'conf', 'constants.config')
+    multicol = check(kwargs, 'multicol',True)
+    J0 = check(kwargs,'J0', np.array([[0.75, 0.25, 0.],
+                                     [0.4,0.85,0.],
+                                     [0,0.2,1]]))
     #Initialize the cloud model
-    seed=check(kwargs,'seed',None)
-    return coarsgraining(conf,C0,M0,multicol=True,J0=J0,seed=seed)
+    seed=check(kwargs, 'seed', None)
+    return coarsgraining(conf, C0 ,M0, multicol=multicol, J0=J0, seed=seed)
 
 ##############################################################################
 ##############################################################################
@@ -229,7 +231,14 @@ def run_once(**kwargs):
     This method only runs the cloudmodel once and saves the output to a file
 
     """
-    
+    def Print(*arg):
+        RegionName=arg[-2]
+
+        thc=arg[-1]
+        time=arg[0].start+datetime.timedelta(hours=24*arg[1])
+        time=time.strftime('%d %b %Y %H:%M')
+        return 'Iterating %.2f (tdiff) %.2f (phase) + %.2f (const) on %s %s\n'\
+                %(thc,arg[0].phase,arg[0].add_c,time,RegionName)
     from mpi4py import MPI
     #Process based mpi
     root = 0
@@ -248,14 +257,6 @@ def run_once(**kwargs):
 
 
 
-    def Print(*arg):
-        RegionName=arg[-2]
-
-        thc=arg[-1]
-        time=arg[0].start+datetime.timedelta(hours=24*arg[1])
-        time=time.strftime('%d %b %Y %H:%M')
-        return 'Iterating %.2f (tdiff) %.2f (phase) + %.2f (const) on %s %s\n'\
-                %(thc,arg[0].phase,arg[0].add_c,time,RegionName)
     Cfg,dates  = __getdates(**kwargs)
     #Split the days for the MPI
     samples = np.array_split(dates,size)
@@ -482,7 +483,7 @@ def diurnal_cylce(**kwargs):
                         h5.createDimension(i,len(j))
                         h5.createVariable(i,'f',(i,))
                         h5.variables[i][:] = j
-                    for key,value in attrs[i].iteritems():
+                    for key,value in attrs[i].items():
                         setattr(h5.variables[i],key,value)
 
                 for i,j in (('deep',deep),('con',con),('strat',strat)):
@@ -697,7 +698,7 @@ def coastal_sensitivity(**kwargs):
                             h5.createVariable(i,'f',(i,))
                         except (ValueError,RuntimeError):
                             pass
-                        for key,value in attrs[i].iteritems():
+                        for key,value in attrs[i].items():
                             setattr(h5[i],key,value)
                         h5[i][:]=Values
                     for i,j in (('con',con[NN:]),('deep',deep[NN:]),('strat',strat[NN:])):
@@ -831,7 +832,7 @@ def coastal_sensitivity(**kwargs):
                         h5.createVariable(i,'f',(i,))
                     except (ValueError,RuntimeError):
                         pass
-                    for key,value in attrs[i].iteritems():
+                    for key,value in attrs[i].items():
                         setattr(h5[i],key,value)
                     h5[i][:]=Values
             try:
@@ -839,7 +840,7 @@ def coastal_sensitivity(**kwargs):
             except (ValueError,RuntimeError):
                 pass
             h5['params'][:]=Global_param_values
-            [setattr(h5['params'],k,v) for k,v in attrs['params'].iteritems()]
+            [setattr(h5['params'],k,v) for k,v in attrs['params'].items()]
             
             g = h5['interact']
         
@@ -1091,6 +1092,7 @@ def GetNames(ko,fallback='Unkown'):
 ##############################################################################
 
 def kw(**kwargs):
+    import multiprocessing
     """
     Method that returns the default parameter keywordarguments
     """
@@ -1103,15 +1105,15 @@ def kw(**kwargs):
         end=None,
         seed=None,
         J0 = np.array([\
-                [0.45,0.65,0.,],
-                [0.65,0.35,0.2,],
-                [0,0.1,1,]\
+                [0.45,0.65,0.00,],
+                [0.65,0.35,0.20,],
+                [0.00,0.10,1.00,]\
                         ]),
         func=run_once,
         sobol=False,
-        size=63,
+        size=(multiprocessing.cpu_count() * 2) -1,
         rank=None)
-    for key,value in kwargs.iteritems():
+    for key,value in kwargs.items():
         if key == 'func' and isinstance(value,str):
             value = F[value]
         KW[key]=value
@@ -1127,31 +1129,35 @@ if __name__ == "__main__":
     kwargs=kw()
 
     helpstring="""
-    Module to run the cloudmodel in various ways, without copuling.
-    The method is supposed to be a bit more flexible
+Module to run the cloudmodel in various ways, without copuling.
+The method is supposed to be a bit more flexible
 
-    Usage:
-        python %s --option=value
-        options are given below
+Usage:
+    python %s --option=value
+    options are given below
 
-    Options:
-        start (str)     : The start of the integration (dafualt %s)
-        end   (str)     : The end of the integration (default %s)
-        boxes   (list)  : The name of the boxes that are considered (default %s)
-        J0  (nd-array)  : The interaction potential (default %s)
-        func (function) : Which function should be considered (default %s)
-        sobol (bool)    : Should a sobol sample be created (dfault %s)
-        rank (int)      : The number of process (default %s)
-        size (int)      : The number of total proceses (default %s)
-        seed (int)      : The random seed number for rand int generation (default %s)
-
+Options:
+    start (str)     : The start of the integration (dafualt %s)
+    end   (str)     : The end of the integration (default %s)
+    boxes   (list)  : The name of the boxes that are considered (default %s)
+    J0  (2d-array)  : The interaction potential 
+                      (default %s
+                               %s
+                               %s)
+    func (function) : Which experiment should be done (default %s)
+    sobol (bool)    : Should a sobol sample be created (dfault %s)
+    rank (int)      : The number of process (default %s)
+    size (int)      : The number of total proceses (default %s)
+    seed (int)      : The random seed number for rand int generation (default %s)
     """%(
             sys.argv[0],
             str(kwargs['end']),
             str(kwargs['end']),
             str(kwargs['boxes']),
-            str(kwargs['J0']),
-            str(kwargs['func']),
+            np.array2string(kwargs['J0'][0], precision=4, formatter={'float_kind':lambda x: "%.2f" % x}),
+            np.array2string(kwargs['J0'][1], precision=4, formatter={'float_kind':lambda x: "%.2f" % x}),
+            np.array2string(kwargs['J0'][2], precision=4, formatter={'float_kind':lambda x: "%.2f" % x}),
+            str(kwargs['func'].__name__),
             str(kwargs['sobol']),
             str(kwargs['rank']),
             str(kwargs['size']),

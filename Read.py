@@ -1,12 +1,9 @@
-#!/usr/bin/env python2.7
-
 """
  Module to read data
 """
 import numpy as np
-#from skimage.feature import canny
 import datetime,os
-from Master.configdir import Config
+from configdir import Config
 from netCDF4 import date2num,num2date,Dataset as nc
 
 class Data(object):
@@ -37,9 +34,6 @@ class Data(object):
                 Returns:
                     float = the thermal heating contrast
         """
-        #Calculate the time of the day:
-        #t = (time + self.startdate.hour+self.startdate.minute/60.) % 24
-        
         #If observations then read them first
         if not isinstance(tmax,(float,int)):
             tmax = self.atmos(tmax,time)
@@ -64,7 +58,7 @@ class Data(object):
 
         #Create a time number that is in the same format as the time vector 
         date = self.startdate+datetime.timedelta(seconds=int(time*60**2))
-        num=date2num(date,"Minutes since 1998-01-01 00:00:00")
+        num = date2num(date, "Minutes since 1998-01-01 00:00:00")
         #Closest index an return
         idx = np.argmin(np.fabs(obs_time-num))
         
@@ -81,7 +75,7 @@ class Data(object):
                 v vertical line seperating the grid in left and right
                 h horizontal line seperating the grid in top and bottome
                 i a square island in the middle of the grid
-                if form is a tuple get the real world data tuplse
+                if form is a tuple get the real world data, tuples
                 should contain (lon_left,lon_right,lat_lower,lat_lupper)
         """
 
@@ -104,7 +98,7 @@ class Data(object):
 
                 lsm[s:e,s:e] = 1
         else:
-            lsmf = nc(os.path.join(os.environ['HOME'],'PhD','Data','Cmorph_slm.nc'))
+            lsmf = nc(os.path.expanduser(landmask))
             lsm = lsmf.variables['slm'][:]
             lon = lsmf.variables['lon'][:]
             lat = lsmf.variables['lat'][:]

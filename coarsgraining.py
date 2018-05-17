@@ -11,7 +11,7 @@ from interaction import Thermal
 #from land import Land
 #from ocean import Ocean
 
-class coarsgraining(SMCM):
+class Coarsgraining(SMCM):
     def __init__(self,configfile,C,D,multicol=False,**kwargs):
         """
         The coarsgraining provides is a class to calculate interaction
@@ -124,10 +124,8 @@ class coarsgraining(SMCM):
             This function calculates the birth and death rates of clouds as a 
             stochastic process 
         Variables:
-            DT the lenght of a timestep in the convection scheme
-        Keywords:
-            animate: should an animation be created
-            anitype : which cloudtype should be animated
+            DT the lenght of a timestep in the cloud scheme (in hours)
+            hours the number of hours the model has been run previously
         """
         
         self.time = 0
@@ -185,8 +183,7 @@ class coarsgraining(SMCM):
             
             #Calculate a new random number to determine where the transition 
             #occurs
-            #np.random.seed(self.seed)
-            #np.random.seed(None)
+            np.random.seed(self.seed)
             r = np.random.rand(1)[0]
             k = 1
             while r > probdist[k-1]:
@@ -386,18 +383,3 @@ class coarsgraining(SMCM):
                 6:[0,-1.,0], #death of deep
                 7:[0,0,-1.]} #death of stratiform
         return Xn+np.array(switch[k])
-
-
-
-        
-
-
-
-
-
-
-            
-
-
-
-

@@ -1,11 +1,10 @@
-#!/usr/bin/python2.7
 import sys,os,datetime,pytz,warnings
 from timezonefinder import TimezoneFinder
 import numpy as np
 import pandas as pd
 from netCDF4 import Dataset as nc
 from netCDF4 import date2num,num2date
-from Master.configdir import Config
+from configdir import Config
 
 def open_file(file,function,**kwargs):
     """
@@ -421,7 +420,7 @@ class Reader(object):
             try:
                 data = open_file(dbfile,pd.read_pickle)[varname].shift(shift)
             except:
-                print open_file(dbfile,pd.read_pickle).keys()
+                print(open_file(dbfile,pd.read_pickle).keys())
                 raise(KeyError,'key not found')
 
         else:
@@ -585,11 +584,9 @@ if __name__ == "__main__":
             x1,var=R.boxdata(varname[0],freq='6H')
             x2,var2=R.boxdata(varname[1],freq='6H')
             var = 2- (2 * ( 1 - var))
-            #var2 = -3.6 * 2 * var2
             var2 /= 12.5
             var2[var2>2]=2
             from scipy.stats import pearsonr
-            print pearsonr(var,var2)
             plt.scatter(var,var2)
             plt.xlabel('Moisture')
             plt.ylabel('Instability')

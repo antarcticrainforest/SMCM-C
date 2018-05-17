@@ -92,8 +92,8 @@ R01_r = c_f(y)*gamma_f(C,y,c)*gamma_f(D,y,-c) / tau01
 #birth of deep
 R02_r = c_f(y)*gamma_f(C,y,c)*(1-gamma_f(D,y,-c)) / tau02
 
-rho = np.array([rho_f(R01,R02,R12,R23,R30,R20,R10,num=x) for x in xrange(4)])
-rho_r = np.array([rho_f(R01_r,R02_r,R12_r,R23_r,R30_r,R20_r,R10_r,num=x) for x in xrange(4)])
+rho = np.array([rho_f(R01,R02,R12,R23,R30,R20,R10,num=x) for x in range(4)])
+rho_r = np.array([rho_f(R01_r,R02_r,R12_r,R23_r,R30_r,R20_r,R10_r,num=x) for x in range(4)])
 
 #rho = rho/rho.sum(axis=-1)[...,np.newaxis]
 #rho_r =rho_r/rho_r.sum(axis=-1)[...,np.newaxis]
@@ -102,14 +102,13 @@ from matplotlib import pyplot as plt
 
 fig = plt.figure()
 nn = 0
-
 ax = fig.add_subplot(2,3,1)
 #V=np.linspace(0,0.9,8).round(2)
 contour = ax.contourf(C,2 - D,rho[0],cmap='Blues')
 fig.colorbar(contour,orientation='horizontal',pad=0.1,aspect=40)
 ax.set_ylabel('Moisture')
 ax.set_title('$\\rho_{1}$')
-
+#'''
 
 #V=np.linspace(0,0.4,8).round(2)
 ax = fig.add_subplot(2,3,2)
@@ -131,6 +130,7 @@ ax = fig.add_subplot(2,3,4)
 contour = ax.contourf(C,2 - D,rho_r[0],cmap='Blues')
 fig.colorbar(contour,orientation='horizontal',pad=0.1,aspect=40)
 ax.set_ylabel('Moisture')
+ax.set_xlabel('Instability')
 ax.set_title('$\\rho_{1}^*$')
 
 
@@ -138,6 +138,7 @@ ax.set_title('$\\rho_{1}^*$')
 ax = fig.add_subplot(2,3,5)
 contour = ax.contourf(C,2 - D,rho_r[1],cmap='Blues')
 fig.colorbar(contour,orientation='horizontal',pad=0.1,aspect=40)
+ax.set_xlabel('Instability')
 ax.set_title('$\\rho_{2}^*$')
 
 
@@ -146,6 +147,7 @@ ax.set_title('$\\rho_{2}^*$')
 ax = fig.add_subplot(2,3,6)
 contour = ax.contourf(C,2 - D,rho_r[2],cmap='Blues')
 fig.colorbar(contour,orientation='horizontal',pad=0.1,aspect=40)
+ax.set_xlabel('Instability')
 ax.set_title('$\\rho_{3}^*$')
 
 
@@ -153,16 +155,19 @@ plt.show()
 
 
 
-exit()
+#exit()
+fig = plt.figure()
+nn = 0
+#'''
 V=np.linspace(0,0.4,8).round(2)
-ax = fig.add_subplot(3,3,2)
+ax = fig.add_subplot(2,3,2)
 contour = ax.contourf(C,2 - D,R02_r,V,cmap='Blues')
 fig.colorbar(contour,orientation='horizontal',pad=0.1,aspect=40)
 ax.set_title('$R_{02}$')
 
 
 V=np.linspace(0,0.5,8).round(2)
-ax = fig.add_subplot(3,3,3)
+ax = fig.add_subplot(2,3,3)
 contour = ax.contourf(C,2 - D,R12_r,V,cmap='Blues')
 fig.colorbar(contour,orientation='horizontal',pad=0.1,aspect=40)
 ax.set_title('$R_{12}$')
@@ -171,7 +176,7 @@ ax.set_title('$R_{12}$')
 
 
 V=np.linspace(0,0.7,8).round(2)
-ax = fig.add_subplot(3,3,7)
+ax = fig.add_subplot(2,3,4)
 contour = ax.contourf(C,2 - D,R23,V,cmap='Blues')
 fig.colorbar(contour,orientation='horizontal',pad=0.1,aspect=40)
 ax.set_title('$R_{23}^*/R_{23}$')
@@ -180,7 +185,7 @@ ax.set_ylabel('Moisture')
 
 
 V=np.linspace(0,0.9,8).round(2)
-ax = fig.add_subplot(3,3,8)
+ax = fig.add_subplot(2,3,5)
 contour = ax.contourf(C,2 - D,R10,V,cmap='Blues')
 fig.colorbar(contour,orientation='horizontal',pad=0.1,aspect=40)
 ax.set_title('$R_{10}^*/R_{10}$')
@@ -188,7 +193,7 @@ ax.set_xlabel('Instability')
 
 
 V=np.linspace(0,0.2,8).round(2)
-ax = fig.add_subplot(3,3,9)
+ax = fig.add_subplot(2,3,6)
 contour = ax.contourf(C,2 - D,R20,V,cmap='Blues')
 fig.colorbar(contour,orientation='horizontal',pad=0.1,aspect=40)
 ax.set_title('$R_{20}^*/R_{20}$')
