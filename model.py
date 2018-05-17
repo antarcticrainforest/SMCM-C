@@ -126,7 +126,7 @@ class SMCM(object):
         #Get the land-sea-mask if one is given
         #Create the Read data object
         self.RD=Data(conf)
-        self.m = self.n/self.q
+        self.m = int(self.n/self.q)
         self.lsm,self.dist = self.RD.lsm(self.m,form=self.form)
         self.mask = SMCM._makeMatrix(self.lsm)
         #check if we prescirbing with an real or an artificial thermal heating
@@ -225,7 +225,7 @@ class SMCM(object):
         self.D,self.C = D,C
         
         self.rho = np.array([self.rho_f(self.R01,self.R02,self.R12,self.R23,self.R30,\
-                self.R20,self.R10,num=x) for x in xrange(4)])
+                self.R20,self.R10,num=x) for x in range(4)])
         self.rho = self.rho.T.swapaxes(0,1)
         
         self.a01 = (self.rho[...,1]*self.R20-self.rho[...,0]*self.R12)
@@ -281,7 +281,7 @@ class SMCM(object):
         R30 = np.ones_like(C)/self.tau30
 
         rho = np.array([self.rho_f(R01,R02,R12,R23,R30,R20,R10,num=x)\
-                for x in xrange(4)])
+                for x in range(4)])
 
         self.rho[:] = rho.T.swapaxes(0,1)
         R30 = R30 * np.ones_like(D)

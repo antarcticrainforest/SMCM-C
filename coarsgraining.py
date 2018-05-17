@@ -94,8 +94,8 @@ class Coarsgraining(SMCM):
         #Initialize the dynamic core for the coasrse graining cells
         self.core=np.empty_like(self.Nccg,dtype=object)
 
-        for I in xrange(self.m):
-            for J in xrange(self.m):#Set the cloud area frac. from the micro-state
+        for I in range(self.m):
+            for J in range(self.m):#Set the cloud area frac. from the micro-state
                 Xq=self.X[I*self.q:(I+1)*self.q,J*self.q:(J+1)*self.q]
                 self.Nccg[I,J] = np.sum(np.sum(Xq*(2 - Xq)*(3-Xq)/2.)) #???????
                 self.Ndcg[I,J] = np.sum(np.sum(Xq*(Xq-1)*(3-Xq)/2.))
@@ -152,8 +152,8 @@ class Coarsgraining(SMCM):
         #There are seven possible transition rates in each macro-lattice
         #site (3.5)
         Rates = np.zeros([self.m,self.m,7])
-        for I in xrange(self.m):
-            for J in xrange(self.m):
+        for I in range(self.m):
+            for J in range(self.m):
                 Xn = WK[I:I+3,J:J+3,:]
                 #Get the neighborhood in the  land-sea-coast-mask
                 mask = self.mask[I:I+3,J:J+3]
@@ -188,10 +188,10 @@ class Coarsgraining(SMCM):
             k = 1
             while r > probdist[k-1]:
                     k+=1
-            n1 = k % self.m
+            n1 = int(k % self.m)
             if n1 == 0:
                 n1 = self.m
-            n2 = (k - n1)/self.m + 1
+            n2 = int((k - n1)/self.m + 1)
             
             #Calculate the CCF of the phase transitions at this specific macro
             #site
@@ -238,8 +238,8 @@ class Coarsgraining(SMCM):
 
             #Now update the transtion rates according to the previous state
             #and the neighbors again
-            for I in xrange(max(n1-1,1),min(n1+1,self.m)+1):
-                for J in xrange(max(n2-1,1),min(n2+1,self.m)+1):
+            for I in range(max(n1-1,1),min(n1+1,self.m)+1):
+                for J in range(max(n2-1,1),min(n2+1,self.m)+1):
                     Xn = WK[I-1:I+2,J-1:J+2,:]
                     #Get the potential for the coast
                     mask = self.mask[I-1:I+2,J-1:J+2]
@@ -265,7 +265,7 @@ class Coarsgraining(SMCM):
             #it needs special treatment
             if n1 == 1 :
                 I = self.m
-                for J in xrange(max(n2-1,1),min(n2+1,self.m)+1):
+                for J in range(max(n2-1,1),min(n2+1,self.m)+1):
                     Xn = WK[I-1:I+2,J-1:J+2,:]
                     #Get the potential for the coast
                     mask = self.mask[I-1:I+2,J-1:J+2]
@@ -288,7 +288,7 @@ class Coarsgraining(SMCM):
                     Rates[I-1,J-1,:] = self.coarseratesfct(Xn,mask,thc,I,J)
             elif  I == self.m:
                 I = 1
-                for J in xrange(max(n2-1,1),min(n2+1,self.m)+1):
+                for J in range(max(n2-1,1),min(n2+1,self.m)+1):
                     Xn = WK[I-1:I+2,J-1:J+2,:]
                     #Get the potential for the coast
                     mask = self.mask[I-1:I+2,J-1:J+2]
@@ -326,7 +326,7 @@ class Coarsgraining(SMCM):
         #point
         J=Thermal(mask,thc,self.J00,self.J0,self.time,self.tend,self.ndays,\
                 interact=self.interact)
-        for k in xrange(3):
+        for k in range(3):
             Hb0[k] = (self.nn0*(\
                     J.j0((1,1),(k,0))*Xn[1,1,0]+J.j0((1,1),(k,1))*Xn[1,1,1]+\
                     J.j0((1,1),(k,2))*Xn[1,1,2])\

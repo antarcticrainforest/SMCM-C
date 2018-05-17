@@ -81,14 +81,15 @@ class Data(object):
 
         #if n % 2 == 0:
         #    n+=1
+        n=int(n)
         if form == 'v' or form =='i' or form =='h':
             lsm = np.ones([n,n])
             if form == 'v':
-                lsm[:,:n/2] = -1
-                lsm[:,n/2:] = 1
+                lsm[:,:int(n/2)] = -1
+                lsm[:,int(n/2):] = 1
             elif form == 'h':
-                lsm[:n/2,:] = -1
-                lsm[n/2:,:] = 1
+                lsm[:int(n/2),:] = -1
+                lsm[int(n/2):,:] = 1
             else:
                 lsm *= -1
                 a = 1/np.sqrt(2) * lsm.shape[0]
