@@ -40,8 +40,9 @@ key = value
 Characters starting with '#' are ignored. You can add as many new keys and values as you like. The *Config* class form the configdir module will automatically detect them and pass the to the SMCM class where they will be made available. The following procedure can be seen as an example.
 
 Suppose you want to add a new variable to the model. The easiest way to achieve that is to add a new entry into the *constants.config* file:
-
+```bash
 new_variable = value # A meaningful describtion of what this variable does
+```
 
 *New_variable* is then available to the SMCM and Coarsgraining class as a new class instance. If you created the Coarsgraining class with:
 ```python
