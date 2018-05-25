@@ -46,12 +46,12 @@ new_variable = value # A meaningful describtion of what this variable does
 
 *New_variable* is then available to the SMCM and Coarsgraining class as a new class instance. If you created the Coarsgraining class with:
 ```python
-CG = Coarsgraining('constants.config', 0.1, 0.4)
+>>> CG = Coarsgraining('constants.config', 0.1, 0.4)
 ```
 
 You can access *new_variable* via:
 ```python
-CG.new_variable
+>>> CG.new_variable
 ```
 ### Running an Example 
 A short example of how to run the cloud model is available in the [test_run](https://github.com/antarcticrainforest/SMCM-C/blob/master/test_run.ipynb) ipython-notebook
